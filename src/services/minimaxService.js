@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import OpenAI from 'openai'
 import axios from 'axios'
-import { createMiniMax } from '@ai-sdk/minimax'
+import { createOpenAI } from '@ai-sdk/openai'
 import { streamText, generateText, tool, stepCountIs, lastAssistantMessageIsCompleteWithToolCalls } from 'ai'
 import { z } from 'zod'
 
@@ -9,16 +9,16 @@ import { z } from 'zod'
 class MiniMaxAgent {
   constructor(config) {
     this.config = config
-    this.minimaxProvider = null
+    this.openaiProvider = null
     this.initializeProvider()
   }
 
   initializeProvider() {
     if (this.config.apiKey && this.config.baseURL) {
-      this.minimaxProvider = createMiniMax({
+      this.openaiProvider = createOpenAI({
         baseURL: this.config.baseURL,
         apiKey: this.config.apiKey,
-        // MiniMax M2 model support
+        // MiniMax M2 model support via OpenAI-compatible interface
         defaultModel: this.config.model || 'MiniMax-M2'
       })
     }
@@ -26,8 +26,8 @@ class MiniMaxAgent {
 
   // Enhanced streamText with tool calling and structured output
   async streamTextWithTools(messages, options = {}) {
-    if (!this.minimaxProvider) {
-      throw new Error('MiniMax provider not initialized')
+    if (!this.openaiProvider) {
+      throw new Error('OpenAI provider not initialized')
     }
 
     const {
@@ -42,7 +42,7 @@ class MiniMaxAgent {
 
     try {
       const result = streamText({
-        model: this.minimaxProvider(model),
+        model: this.openaiProvider(model),
         messages: this.convertToModelMessages(messages),
         tools,
         stopWhen,
@@ -61,8 +61,8 @@ class MiniMaxAgent {
 
   // Enhanced generateText with tool calling
   async generateTextWithTools(messages, options = {}) {
-    if (!this.minimaxProvider) {
-      throw new Error('MiniMax provider not initialized')
+    if (!this.openaiProvider) {
+      throw new Error('OpenAI provider not initialized')
     }
 
     const {
@@ -78,7 +78,7 @@ class MiniMaxAgent {
 
     try {
       const result = await generateText({
-        model: this.minimaxProvider(model),
+        model: this.openaiProvider(model),
         messages: this.convertToModelMessages(messages),
         tools,
         stopWhen,
@@ -233,7 +233,7 @@ class MiniMaxService {
     
     // AI SDK 6 Beta Agent
     this.agent = null
-    this.minimaxProvider = null
+    this.openaiProvider = null
   }
   
   initialize(config) {
