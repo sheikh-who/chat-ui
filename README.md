@@ -1,17 +1,43 @@
 # Chat-UI: Conversational AI Interface
 
-A modern, responsive chatbot interface powered by **MiniMax M2** with advanced conversational capabilities and tool integration.
+A modern, responsive chatbot interface powered by **MiniMax M2** with **AI SDK 6 Beta** integration, featuring advanced conversational capabilities, tool calling, and structured output.
 
 ## 🚀 Features
 
-- **Modern UI**: Clean, responsive design with dark/light mode
-- **MiniMax M2 Integration**: Powered by advanced text generation models
+- **AI SDK 6 Beta Integration**: Enhanced with unified provider, agent interface, and structured output
+- **Modern UI**: Clean, responsive design with dark/light mode  
+- **MiniMax M2 Integration**: Powered by advanced text generation models (204,800 token context)
 - **Real-time Chat**: Streaming responses with typing indicators
-- **Tool Integration**: Support for function calls and external tools
+- **Tool Calling**: Advanced tool execution with approval workflows
+- **Structured Output**: Generate JSON, arrays, and other structured data
+- **Multi-step Conversations**: AI can make multiple tool calls and iterations
+- **Agent Interface**: Standardized agent building with full execution control
 - **Context Awareness**: Maintains conversation history and context
 - **Multi-model Support**: Switch between different MiniMax models
 - **Export/Import**: Save and restore conversation history
 - **Customizable**: Theme and behavior customization
+
+## 🆕 AI SDK 6 Beta Features
+
+### Enhanced Capabilities
+- **Unified Provider**: Provider-agnostic API that works with multiple LLM backends
+- **Agent Interface**: Standardized way to build agents with tool loops and state management
+- **Tool Execution Approval**: Human-in-the-loop patterns for sensitive operations
+- **Structured Output (Stable)**: Generate structured data alongside text responses
+- **Multi-step Generation**: Enable complex workflows with stop conditions
+
+### Built-in Tools
+- **Weather Assistant**: Get real-time weather information
+- **Calculator**: Perform mathematical calculations
+- **Search Assistant**: Find information from the web
+- **Multi-Tool Assistant**: Combine multiple tools for complex tasks
+
+### Use Cases
+- **General Assistant**: Standard conversational AI with basic tools
+- **Weather Assistant**: Focused on weather-related queries
+- **Calculator**: Mathematical problem solving
+- **Search Assistant**: Information retrieval and web search
+- **Multi-Tool Assistant**: Complex multi-step reasoning tasks
 
 ## 🎯 Supported Models
 
@@ -35,7 +61,7 @@ A modern, responsive chatbot interface powered by **MiniMax M2** with advanced c
 git clone https://github.com/sheikh-who/chat-ui.git
 cd chat-ui
 
-# Install dependencies
+# Install dependencies (includes AI SDK 6 Beta packages)
 npm install
 
 # Configure environment
@@ -45,6 +71,13 @@ cp .env.example .env
 # Start development server
 npm run dev
 ```
+
+### AI SDK 6 Beta Dependencies
+- `ai@^3.0.0-beta.32` - Core AI SDK
+- `@ai-sdk/vue@^3.0.0-beta.32` - Vue.js integration
+- `@ai-sdk/minimax@^3.0.0-beta.32` - MiniMax provider
+- `@ai-sdk/openai@^3.0.0-beta.32` - OpenAI provider
+- `zod@^3.22.4` - Schema validation
 
 ### Production Build
 
@@ -69,31 +102,69 @@ npm run preview
 ### Environment Variables
 
 ```env
+# MiniMax API Configuration
 VITE_MINIMAX_API_KEY=your_api_key_here
-VITE_MINIMAX_BASE_URL=https://api.minimax.chat/v1
-VITE_DEFAULT_MODEL=minimax-m2
+VITE_MINIMAX_BASE_URL=https://api.minimax.chat
+VITE_MINIMAX_MODEL=MiniMax-M2
+
+# AI SDK 6 Beta Settings
+VITE_ENABLE_AI_PROVIDER=true
+VITE_DEFAULT_USE_CASE=general
+VITE_ENABLE_TOOL_APPROVAL=false
+VITE_ENABLE_STRUCTURED_OUTPUT=true
+VITE_MAX_TOOL_STEPS=5
+
+# Application Settings
 VITE_MAX_TOKENS=2048
+VITE_TEMPERATURE=0.7
+VITE_THEME=auto
+VITE_LANGUAGE=en
 ```
 
 ### API Configuration
 
-The application supports both Anthropic and OpenAI SDK compatibility:
+The application supports multiple API formats with AI SDK 6 Beta:
 
 ```javascript
-// Anthropic SDK (Recommended)
-import Anthropic from '@anthropic-ai/sdk'
+// AI SDK 6 Beta Provider (Recommended)
+import { createMiniMax } from '@ai-sdk/minimax'
+import { streamText } from 'ai'
 
-const anthropic = new Anthropic({
-  apiKey: process.env.VITE_MINIMAX_API_KEY,
-  baseURL: process.env.VITE_MINIMAX_BASE_URL
+const minimax = createMiniMax({
+  baseURL: process.env.VITE_MINIMAX_BASE_URL,
+  apiKey: process.env.VITE_MINIMAX_API_KEY
 })
 
-// OpenAI SDK
-import OpenAI from 'openai'
+// Stream text with tools
+const result = await streamText({
+  model: minimax('MiniMax-M2'),
+  messages,
+  tools: {
+    weather: tool({
+      description: 'Get weather info',
+      inputSchema: z.object({ location: z.string() }),
+      execute: async ({ location }) => ({ temp: 22 })
+    })
+  }
+})
+```
 
-const openai = new OpenAI({
-  apiKey: process.env.VITE_MINIMAX_API_KEY,
-  baseURL: process.env.VITE_MINIMAX_BASE_URL
+### Agent Configuration
+
+```javascript
+// Create specialized agents for different use cases
+const weatherAgent = agent({
+  model: minimax('MiniMax-M2'),
+  instructions: 'You are a helpful weather assistant',
+  tools: { weather: weatherTool },
+  stopWhen: stepCountIs(3)
+})
+
+const calculatorAgent = agent({
+  model: minimax('MiniMax-M2'),
+  instructions: 'You are a mathematical calculator',
+  tools: { calculate: mathTool },
+  stopWhen: stepCountIs(2)
 })
 ```
 
@@ -103,25 +174,92 @@ const openai = new OpenAI({
 chat-ui/
 ├── src/
 │   ├── components/          # Reusable UI components
-│   │   ├── ChatMessage.vue
-│   │   ├── MessageInput.vue
-│   │   ├── ModelSelector.vue
-│   │   └── ThemeToggle.vue
-│   ├── stores/             # Pinia state management
-│   │   ├── chatStore.js
-│   │   └── settingsStore.js
-│   ├── services/           # API and business logic
-│   │   ├── minimaxService.js
-│   │   ├── chatService.js
-│   │   └── storageService.js
-│   ├── utils/              # Helper functions
-│   │   ├── textUtils.js
-│   │   └── apiUtils.js
-│   ├── App.vue             # Main application component
-│   └── main.js             # Application entry point
-├── public/                 # Static assets
+│   │   ├── ChatMessage.vue      # Individual message display
+│   │   ├── MessageInput.vue     # Message input with file upload
+│   │   ├── ModelSelector.vue    # AI model selection
+│   │   ├── SettingsPanel.vue    # Settings interface
+│   │   ├── ToastContainer.vue   # Notification system
+│   │   └── Icon.vue             # Icon component
+│   ├── pages/               # Route components
+│   │   ├── ChatPage.vue         # Main chat interface
+│   │   ├── SettingsPage.vue     # Settings page
+│   │   ├── HelpPage.vue         # Help and documentation
+│   │   └── NotFoundPage.vue     # 404 error page
+│   ├── stores/              # Pinia state management
+│   │   ├── chatStore.js         # Chat state management
+│   │   └── settingsStore.js     # Settings state management
+│   ├── services/            # API and business logic
+│   │   ├── minimaxService.js    # MiniMax API with AI SDK 6 Beta
+│   │   └── fileService.js       # File handling service
+│   ├── utils/               # Helper functions
+│   │   ├── dateUtils.js         # Date formatting utilities
+│   │   ├── numberUtils.js       # Number formatting utilities
+│   │   └── exportUtils.js       # Export/import utilities
+│   ├── App.vue              # Main application component
+│   ├── main.js              # Application entry point
+│   ├── router.js            # Vue Router configuration
+│   └── style.css            # Global styles and CSS variables
+├── public/                  # Static assets
 ├── package.json
+├── vite.config.js          # Vite configuration
+├── .env.example            # Environment variable template
 └── README.md
+```
+
+## 🔧 AI SDK 6 Beta Integration
+
+### Agent Interface
+```javascript
+import { agent, streamText, tool, stepCountIs } from 'ai'
+import { createMiniMax } from '@ai-sdk/minimax'
+
+// Create MiniMax provider
+const minimax = createMiniMax({
+  baseURL: 'https://api.minimax.chat',
+  apiKey: 'your-api-key'
+})
+
+// Create agent with tools
+const weatherAgent = agent({
+  model: minimax('MiniMax-M2'),
+  tools: {
+    weather: tool({
+      description: 'Get weather information',
+      inputSchema: z.object({
+        location: z.string()
+      }),
+      execute: async ({ location }) => {
+        // Return weather data
+        return { location, temperature: 22, condition: 'sunny' }
+      }
+    })
+  },
+  stopWhen: stepCountIs(5)
+})
+
+// Use in conversation
+const result = await weatherAgent.stream('What\'s the weather in Paris?')
+```
+
+### Structured Output
+```javascript
+import { generateText, createDataStreamResponse } from 'ai'
+
+// Generate structured data
+const result = await generateText({
+  model: minimax('MiniMax-M2'),
+  messages: [{ role: 'user', content: 'Extract contact info' }],
+  output: {
+    schema: z.object({
+      name: z.string(),
+      email: z.string().email(),
+      phone: z.string().optional()
+    })
+  }
+})
+
+// Access structured output
+console.log(result.output) // { name: 'John', email: 'john@example.com' }
 ```
 
 ## 🎨 Customization

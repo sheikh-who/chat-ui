@@ -33,8 +33,9 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['vue', 'vue-router', 'pinia'],
-          ai: ['@anthropic-ai/sdk', 'openai'],
-          utils: ['axios', 'marked', 'uuid', 'date-fns']
+          ai: ['ai', '@ai-sdk/vue', '@ai-sdk/minimax', '@ai-sdk/openai', '@anthropic-ai/sdk', 'openai'],
+          utils: ['axios', 'marked', 'uuid', 'date-fns', 'zod'],
+          chart: ['chart.js', 'chartjs-adapter-date-fns']
         }
       }
     }
