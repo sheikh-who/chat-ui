@@ -25,7 +25,12 @@
     "marked": "^10.0.0",
     "highlight.js": "^11.9.0",
     "uuid": "^9.0.1",
-    "date-fns": "^2.30.0"
+    "date-fns": "^2.30.0",
+    "ai": "^3.0.0-beta.32",
+    "@ai-sdk/vue": "^3.0.0-beta.32",
+    "@ai-sdk/minimax": "^3.0.0-beta.32",
+    "@ai-sdk/openai": "^3.0.0-beta.32",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.0",
