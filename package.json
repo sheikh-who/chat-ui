@@ -1,0 +1,71 @@
+{
+  "name": "chat-ui",
+  "version": "1.0.0",
+  "description": "Modern chatbot interface powered by MiniMax M2 with conversational AI capabilities",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .js,.vue --fix",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "format": "prettier --write src/",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "vue": "^3.4.0",
+    "pinia": "^2.1.7",
+    "vue-router": "^4.2.5",
+    "@anthropic-ai/sdk": "^0.21.0",
+    "openai": "^4.20.0",
+    "axios": "^1.6.0",
+    "marked": "^10.0.0",
+    "highlight.js": "^11.9.0",
+    "uuid": "^9.0.1",
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0",
+    "@vue/test-utils": "^2.4.0",
+    "eslint": "^8.54.0",
+    "eslint-plugin-vue": "^9.18.0",
+    "prettier": "^3.1.0",
+    "vue-tsc": "^1.8.25",
+    "typescript": "^5.2.0",
+    "@vue/tsconfig": "^0.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "unplugin-auto-import": "^0.17.0",
+    "unplugin-vue-components": "^0.26.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "chatbot",
+    "ai",
+    "minimax",
+    "conversational-ai",
+    "vue",
+    "typescript",
+    "chat-ui",
+    "web-app"
+  ],
+  "author": "MiniMax Agent",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sheikh-who/chat-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sheikh-who/chat-ui/issues"
+  },
+  "homepage": "https://github.com/sheikh-who/chat-ui#readme"
+}
